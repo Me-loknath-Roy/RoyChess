@@ -1,18 +1,11 @@
-<!--
-Complete attractive chess web app (single-file). Save as index.html in your repo root.
-This uses chess.js (move validation) and chessboard.js (UI) via jsDelivr CDN.
-It supports: drag & drop, legal moves, move history, undo, restart, FEN export, dark/light theme, responsive layout.
-To make it live: push to GitHub and enable GitHub Pages (or deploy to Netlify/Vercel). Instructions below.
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Elegant Chess — University Project</title>
+  <title>RoyChess — Online Chess Game</title>
 
-  <!-- Chessboard.js CSS (CDN) -->
+  <!-- Chessboard.js CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"/>
 
   <style>
@@ -24,44 +17,82 @@ To make it live: push to GitHub and enable GitHub Pages (or deploy to Netlify/Ve
       --muted: rgba(255,255,255,0.6);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
-    .wrap{width:100%;max-width:1100px;display:grid;grid-template-columns:520px 1fr;gap:28px}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui;
+      background:var(--bg);
+      color:#e6eef8;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px
+    }
+    .wrap{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns:520px 1fr;
+      gap:28px
+    }
 
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.7);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.04)}
+    .card{
+      background:rgba(255,255,255,0.03);
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 6px 30px rgba(2,6,23,0.7);
+      backdrop-filter: blur(6px);
+      border:1px solid rgba(255,255,255,0.04)
+    }
 
     .left{display:flex;flex-direction:column;align-items:center;padding:18px}
     #board{width:100%;max-width:480px}
 
     .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-    button.btn{padding:8px 12px;border-radius:10px;border:0;background:var(--glass);color:var(--muted);cursor:pointer;font-weight:600}
-    button.btn.primary{background:var(--accent);color:white;padding:10px 14px}
+    button.btn{
+      padding:8px 12px;
+      border-radius:10px;
+      border:0;
+      background:var(--glass);
+      color:var(--muted);
+      cursor:pointer;
+      font-weight:600
+    }
+    button.btn.primary{
+      background:var(--accent);
+      color:white;
+      padding:10px 14px
+    }
     .status{margin-top:12px;text-align:center;color:var(--muted);font-size:14px}
 
-    .right{padding:18px;display:flex;flex-direction:column;gap:12px}
-    h1{font-size:20px;margin:0;background:linear-gradient(90deg,#fff,#bde0fe);-webkit-background-clip:text;background-clip:text;color:transparent}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
-
-    .panel{display:flex;gap:12px;flex-direction:column}
-    .moves{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-height:150px;overflow:auto}
+    h1{
+      font-size:22px;
+      margin:0;
+      background:linear-gradient(90deg,#fff,#bde0fe);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent
+    }
+    .moves{
+      background:rgba(255,255,255,0.02);
+      padding:12px;
+      border-radius:10px;
+      min-height:150px;
+      overflow:auto
+    }
     .moves ol{margin:0;padding-left:20px;color:var(--muted)}
 
-    .row{display:flex;gap:10px;align-items:center}
-    .field{background:#071018;padding:10px;border-radius:8px;color:var(--muted);font-family:monospace}
+    @media (max-width:900px){
+      .wrap{grid-template-columns:1fr;}
+    }
 
-    footer{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
-
-    @media (max-width:980px){.wrap{grid-template-columns:1fr;max-width:780px}.left{order:2}.right{order:1}}
-
-    /* chessboard.js overrides for nicer look */
-    .board {box-shadow: 0 8px 30px rgba(2,6,23,0.6);border-radius:10px;overflow:hidden}
     .square-55d63{transition: background 120ms ease}
     .black-3c85d{background: linear-gradient(180deg,#708090,#465a66)}
     .white-1e1d7{background: linear-gradient(180deg,#f8fafc,#e6eef8)}
-
     .highlight { box-shadow: inset 0 0 0 4px rgba(99,102,241,0.15); }
-
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card left">
@@ -76,125 +107,59 @@ To make it live: push to GitHub and enable GitHub Pages (or deploy to Netlify/Ve
       </div>
 
       <div class="status" id="status">Play: White — Drag a piece to move</div>
-      <footer>Made for university — Editable &amp; deployable to GitHub Pages</footer>
     </div>
 
-    <div class="card right">
-      <div>
-        <h1>Elegant Chess</h1>
-        <p class="lead">A responsive, attractive chessboard with full move validation (using chess.js) and smooth drag & drop (chessboard.js). Includes move history, undo, export, and theme toggle — ready to publish to GitHub Pages.</p>
-      </div>
+    <div class="card">
+      <h1>RoyChess</h1>
+      <p style="color:#9ca3af;">A fully interactive online chess game with drag & drop, move validation, checkmate detection, move history, and theme toggling.</p>
 
-      <div class="panel">
-        <div class="row">
-          <div class="field" id="fen">FEN: <span id="fenText"></span></div>
-        </div>
-
-        <div class="moves">
-          <strong style="color:white">Move History</strong>
-          <ol id="movesList"></ol>
-        </div>
-
-        <div class="row">
-          <label style="min-width:80px">Game Notes</label>
-          <textarea id="notes" rows="4" style="flex:1;border-radius:8px;padding:8px;background:#071018;border:0;color:var(--muted)"></textarea>
-        </div>
-
+      <div class="moves">
+        <strong style="color:white">Move History</strong>
+        <ol id="movesList"></ol>
       </div>
     </div>
   </div>
 
-  <!-- dependencies (CDN) -->
+  <!-- JAVASCRIPT LIBRARIES -->
   <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
+
+  <!-- REQUIRED: jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Chessboard.js -->
   <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
-  <script>
-    // Game state using chess.js
-    const game = new Chess(); // chess.js provides move legality, check/checkmate detection
 
-    // chessboard.js board
-    const cfg = {
+  <script>
+    const game = new Chess();
+
+    const board = Chessboard('board', {
       draggable: true,
       position: 'start',
       onDragStart: onDragStart,
       onDrop: onDrop,
+      onSnapEnd: onSnapEnd,
       onMouseoverSquare: onMouseoverSquare,
-      onMouseoutSquare: onMouseoutSquare,
-      onSnapEnd: onSnapEnd
-    };
+      onMouseoutSquare: onMouseoutSquare
+    });
 
-    const board = Chessboard('board', cfg);
-
-    // UI elements
     const statusEl = document.getElementById('status');
     const movesList = document.getElementById('movesList');
-    const fenText = document.getElementById('fenText');
 
-    function updateStatus() {
-      const turn = game.turn() === 'w' ? 'White' : 'Black';
-      if (game.in_checkmate()) {
-        statusEl.textContent = `Checkmate — ${turn === 'White' ? 'Black' : 'White'} wins.`;
-      } else if (game.in_draw()) {
-        statusEl.textContent = 'Draw — game over';
-      } else {
-        statusEl.textContent = `Play: ${turn} — ${game.in_check() ? 'Check!' : 'Move a piece'}`;
-      }
-      fenText.textContent = game.fen();
-
-      // update move list
-      const history = game.history({ verbose: true });
-      movesList.innerHTML = '';
-      for (let i = 0; i < history.length; i += 2) {
-        const white = history[i] ? history[i].san : '';
-        const black = history[i+1] ? history[i+1].san : '';
-        const li = document.createElement('li');
-        li.style.marginBottom = '6px';
-        li.textContent = `${Math.floor(i/2)+1}. ${white} ${black}`;
-        movesList.appendChild(li);
-      }
-    }
-
-    updateStatus();
-
-    // Highlighting possible moves
-    let onSquare = null;
-    function removeHighlights() {
-      const squares = document.querySelectorAll('.square-55d63');
-      squares.forEach(sq=>sq.classList.remove('highlight'));
-    }
-
-    function onMouseoverSquare(square, piece) {
-      // get moves for this square
-      const moves = game.moves({ square: square, verbose: true });
-      if (moves.length === 0) return;
-      removeHighlights();
-      for (let i = 0; i < moves.length; i++) {
-        const sq = document.querySelector('.square-' + moves[i].to);
-        if (sq) sq.classList.add('highlight');
-      }
-    }
-
-    function onMouseoutSquare(square, piece) {
-      removeHighlights();
-    }
-
-    function onDragStart(source, piece, position, orientation) {
-      // do not pick up pieces if the game is over
+    function onDragStart(source, piece) {
       if (game.game_over()) return false;
-      // only pick up pieces for the side to move
       if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-          (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-        return false;
-      }
+          (game.turn() === 'b' && piece.search(/^w/) !== -1)) return false;
     }
 
     function onDrop(source, target) {
-      // see if the move is legal
-      const move = game.move({ from: source, to: target, promotion: 'q' });
+      let move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+      });
 
-      // illegal move
       if (move === null) return 'snapback';
-
       updateStatus();
     }
 
@@ -202,43 +167,73 @@ To make it live: push to GitHub and enable GitHub Pages (or deploy to Netlify/Ve
       board.position(game.fen());
     }
 
-    // Controls
-    document.getElementById('btnNew').addEventListener('click', ()=>{
-      game.reset(); board.start(); updateStatus();
-    });
-    document.getElementById('btnUndo').addEventListener('click', ()=>{
-      game.undo(); board.position(game.fen()); updateStatus();
-    });
-    document.getElementById('btnFlip').addEventListener('click', ()=>{
-      board.flip();
-    });
-    document.getElementById('btnExport').addEventListener('click', ()=>{
-      navigator.clipboard.writeText(game.fen()).then(()=>{
-        alert('FEN copied to clipboard');
-      }).catch(()=>{alert('Copy failed — here is the FEN:
-'+game.fen())});
-    });
+    function updateStatus() {
+      const turn = game.turn() === 'w' ? 'White' : 'Black';
+      let status = `Play: ${turn}`;
 
-    // Theme toggle: flip color variables for fun
-    let dark = true;
-    document.getElementById('btnTheme').addEventListener('click', ()=>{
-      dark = !dark;
-      if (!dark) document.body.style.background = 'linear-gradient(135deg,#f8fafc,#dbeafe)';
-      else document.body.style.background = 'linear-gradient(135deg,#0f172a 0%, #001219 100%)';
-    });
+      if (game.in_checkmate()) {
+        status = `Checkmate — ${turn === 'White' ? 'Black' : 'White'} wins.`;
+      } else if (game.in_draw()) {
+        status = "Draw — game over";
+      } else if (game.in_check()) {
+        status += " — Check!";
+      }
 
-    // accessibility: keyboard move support (simple)
-    // (Optional extension for your project: add full PGN support, AI, multiplayer)
+      statusEl.textContent = status;
 
-    // make initial board responsive
-    function resizeBoard(){
-      const container = document.getElementById('board');
-      const w = Math.min(480, Math.round(window.innerWidth*0.45));
-      container.style.width = w+'px';
-      board.resize();
+      const hist = game.history();
+      movesList.innerHTML = "";
+      hist.forEach((m, i) => {
+        const li = document.createElement("li");
+        li.textContent = m;
+        movesList.appendChild(li);
+      });
     }
-    window.addEventListener('resize', resizeBoard);
-    resizeBoard();
+
+    function onMouseoverSquare(square) {
+      const moves = game.moves({ square, verbose: true });
+      if (!moves.length) return;
+
+      moves.forEach(m => {
+        $(`.square-${m.to}`).addClass('highlight');
+      });
+    }
+
+    function onMouseoutSquare() {
+      $('.square-55d63').removeClass('highlight');
+    }
+
+    // Buttons
+    document.getElementById("btnNew").onclick = () => {
+      game.reset();
+      board.start();
+      updateStatus();
+    };
+
+    document.getElementById("btnUndo").onclick = () => {
+      game.undo();
+      board.position(game.fen());
+      updateStatus();
+    };
+
+    document.getElementById("btnFlip").onclick = () => board.flip();
+
+    document.getElementById("btnExport").onclick = () => {
+      navigator.clipboard.writeText(game.fen())
+        .then(() => alert("FEN copied!"))
+        .catch(() => alert("Could not copy FEN."));
+    };
+
+    let dark = true;
+    document.getElementById("btnTheme").onclick = () => {
+      dark = !dark;
+      document.body.style.background = dark
+        ? "linear-gradient(135deg,#0f172a,#001219)"
+        : "linear-gradient(135deg,#f8fafc,#dbeafe)";
+    };
+
+    updateStatus();
   </script>
+
 </body>
 </html>
